@@ -1,6 +1,6 @@
 <div align="center">
 
-# Code Atlas
+# CodeAtlas
 
 **Sieh live zu, wie die KI deinen Code baut.**
 
