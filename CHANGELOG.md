@@ -1,4 +1,9 @@
-# Änderungen
+# Änderungen / Changelog
+
+## 5.1 / Bridge 2.1 – English interface
+- Sprachumschalter Deutsch/Englisch (⚙ → Ansicht → Sprache, Standard nach Browser) – Language switch German/English (⚙ → View → Language, default from the browser).
+- Übersetzt werden alle sichtbaren Texte, Tooltips und Diagrammbeschriftungen; Aufträge an Claude und die Systemanweisung der Bridge folgen der Sprache – All visible text, tooltips and diagram labels are translated; requests to Claude and the bridge's system prompt follow the language.
+- README und Dokumentation auf Englisch (`README.md`, `docs/DOCUMENTATION.md`), deutsche Fassung in `README.de.md` und `docs/DOKUMENTATION.md`.
 
 ## 5.0 – Einfache Ansicht und neues Erscheinungsbild
 - Start in der einfachen Ansicht: nur Chat und Diagramm; **Erweitert** blendet Struktur, Details, Konsole, Plan, Team und Verbindungen ein.

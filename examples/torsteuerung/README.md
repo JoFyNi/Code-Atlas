@@ -1,16 +1,20 @@
-# Beispiel: Torsteuerung
+# Example: gate controller (Torsteuerung)
 
-Kleine Steuerung eines Rolltors in C: Taster, Endlagen, Lichtschranke, Motor. Gut zum Ausprobieren von CodeAtlas Compile.
+A small roller-gate controller in C: push buttons, end positions, light barrier, motor. Good for trying out CodeAtlas. The code itself uses German names (*Tor* = gate, *Notaus* = emergency stop).
 
 ```bash
 python codeatlas_bridge.py examples/torsteuerung --desktop
 ```
 
-Aufträge zum Ausprobieren:
+Requests to try:
 
-- „Baue einen Notaus ein, der den Motor sofort stoppt und quittiert werden muss.“
-- „Schreibe Tests für die Torsteuerung und lass sie im Atlas laufen.“
-- „Das Tor soll nach 30 Sekunden im Zustand offen automatisch schließen.“
-- „Erkläre mir, wie `tor_zyklus()` die Zustände wechselt.“ (Arbeitsweise *Planen*)
+- "Add an emergency stop that halts the motor immediately and has to be acknowledged."
+- "Write tests for the gate controller and run them in the atlas."
+- "When the gate has been open for 30 seconds it should close automatically."
+- "Explain how `tor_zyklus()` switches states." (mode *Plan*)
 
-Ausführen: unter einem Auftrag **▶ ausführen** oder in der erweiterten Ansicht Konsole → *Ausführen* (braucht `gcc`).
+Run it: **▶ run** below a request, or in the advanced view Console → *Run* (needs `gcc`).
+
+---
+
+**Deutsch:** Kleine Steuerung eines Rolltors in C (Taster, Endlagen, Lichtschranke, Motor). Starten wie oben, dann z. B.: „Baue einen Notaus ein, der den Motor sofort stoppt und quittiert werden muss.“

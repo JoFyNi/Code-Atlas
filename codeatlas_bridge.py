@@ -219,7 +219,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
-VERSION = "2.0"
+VERSION = "2.1"
 IGNORE_DIRS = {".codeatlas", "node_modules", ".git", ".svn", ".hg", "dist", "build", "out", "target", "bin", "obj", "Debug", "Release", "x64",
                "venv", ".venv", "env", "__pycache__", ".next", ".nuxt", "coverage", "vendor", ".idea", ".vscode", ".vs", ".gradle", "Pods"}
 KEEP_DOT_DIRS = {".github", ".gitlab", ".circleci", ".devcontainer", ".husky", ".storybook"}   # versteckt, aber Teil des Projekts
@@ -2825,6 +2825,17 @@ C: Dateien test_*.c, die atlas_test.h einbinden (#include mit Anführungszeichen
 Wenn ein Test fehlschlägt: zuerst den Fehlerort im Programm prüfen und dort beheben; den Test nur ändern, wenn er selbst falsch ist."""
 
 
+AGENT_PROMPT_EN = """You are working inside CodeAtlas: the user watches live in a diagram what you read, change and run.
+CodeAtlas knows the code graph of the project. Use it first: atlas_orient (overview), atlas_find (find a name, file:line or stack trace), atlas_impact (who depends on a function, which tests – before changing widely used code), atlas_trace (call path from A to B), atlas_read (only the source of one function). This saves many Read/Grep calls. atlas_rules shows architecture rules you must follow.
+For specification, plan and tasks there are plan_get, plan_set_spec, plan_set_plan, plan_set_tasks, plan_task_update – use them only when the request asks for it.
+For tests there are the tools of the MCP server "codeatlas": tests_info (which tests exist, how to write them), tests_run (run), tests_last (last result).
+Run tests with tests_run – not via Bash (pytest, python, gcc …). tests_run runs them with tracing in CodeAtlas; the user sees the run in the diagram, and for every failure you get the failure location in the program (file:line, function), the check in the test, the call path, variable values, the functions the test executed and which functions no test reaches. This is more reliable than console output.
+Python: files test_*.py with functions test_*() and assert (or unittest.TestCase); pytest is used if installed.
+C: files test_*.c that include atlas_test.h (#include with quotes; provided by CodeAtlas, do not write main()): TEST(name) { CHECK(condition); CHECK_EQ_INT(a, b); CHECK_EQ_STR(a, b); CHECK_NEAR(a, b, eps); REQUIRE(condition); } – declare helper functions in test files static.
+If a test fails: check the failure location in the program first and fix it there; change the test only if the test itself is wrong.
+The user works in English: answer in English. Tool results from CodeAtlas may contain German labels."""
+
+
 def _disp(p):
     """Pfad für Claude: relativ zum Projektordner (ohne den Projektnamen davor, den die Oberfläche benutzt)."""
     return str(p).split("/", 1)[1] if p and "/" in str(p) else str(p or "?")
@@ -4977,7 +4988,7 @@ class AgentHub:
                                                                    "env": {"CODEATLAS_PROJECT": str(self.prj.root)}}}}, indent=1), "utf-8")
             argv += ["--mcp-config", str(mf)]
         if self.mcp and "--append-system-prompt" not in own and "--system-prompt" not in own:
-            argv += ["--append-system-prompt", " ".join(AGENT_PROMPT.split("\n"))]
+            argv += ["--append-system-prompt", " ".join((AGENT_PROMPT_EN if getattr(self, "lang", "de") == "en" else AGENT_PROMPT).split("\n"))]
         if "--settings" not in own:
             # Rückfragen von Claude Code („darf ich diesen Befehl ausführen?“) landen als Freigabe-Karte im Atlas
             sf = self.prj.root / ".codeatlas" / "agent-settings.json"
@@ -5998,6 +6009,8 @@ def make_handler(prj: Project, token: str, editors, presets, watcher, default_ed
             try:
                 b = self.body()
                 if u.path == "/api/agent/start":
+                    if b.get("lang") in ("de", "en"):
+                        hub.lang = b.get("lang")
                     try:
                         return self.reply(200, hub.start(b.get("agent", "0"), b.get("prompt"), b.get("mode"), bool(b.get("fresh")), b.get("attachments"), b.get("model"), b.get("effort"), b.get("gate")))
                     except RuntimeError as e:

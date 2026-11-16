@@ -1,6 +1,8 @@
 # CodeAtlas Compile – Dokumentation
 
-Stand: 16.11.2026 · Oberfläche 5.0 · Bridge 2.0
+Stand: 16.11.2026 · Oberfläche 5.1 · Bridge 2.1
+
+Die Oberfläche gibt es auf Deutsch und Englisch (⚙ → *Ansicht* → *Sprache*; Standard: Sprache des Browsers). English documentation: [DOCUMENTATION.md](DOCUMENTATION.md).
 
 CodeAtlas Compile ist ein „Compiler zum Vibecoding“. Du beschreibst, was gebaut oder geändert werden soll, Claude Code setzt es um, und du siehst live im Diagramm, was passiert:
 
@@ -143,13 +145,13 @@ Der Atlas startet in der **einfachen Ansicht**: links der Chat mit Claude Code, 
 
 | Bereich | Inhalt |
 |---|---|
-| **Ansicht** | Einfach/Erweitert, Farbschema (Dunkel/Hell/System), Akzentfarbe (Türkis, Limette, Rosa, Eisblau – gilt auch im Diagramm), Breite des Chats, Übersichtskarte, Zoomstufen-Leiste, Animationen |
+| **Ansicht** | Einfach/Erweitert, Sprache (Deutsch/Englisch), Farbschema (Dunkel/Hell/System), Akzentfarbe (Türkis, Limette, Rosa, Eisblau – gilt auch im Diagramm), Breite des Chats, Übersichtskarte, Zoomstufen-Leiste, Animationen |
 | **KI** | Agent, Aufwand, Kamera folgt der KI, Auswahl als Kontext, Claude Code im Terminal mitlesen, Konto |
 | **Automatik** | Build prüfen, Build-Fehler zurückgeben, Tests nach jedem Auftrag, Qualitätstor (Tests/Build/Regeln), Commit pro Auftrag, Projektkarte in CLAUDE.md |
 | **Projekt** | Projekt öffnen, Verbindungen, Dateien/ZIP, Code einfügen, Demo, Stresstest |
 | **Tastatur** | alle Tastenkürzel |
 
-Die KI- und Automatik-Schalter sind dieselben wie unter ⚙ in der KI-Leiste der erweiterten Ansicht; beide Stellen ändern denselben Wert. Gespeichert wird im Browser (`cal-ui`, `cal-vopt`, `cal-theme`).
+Die KI- und Automatik-Schalter sind dieselben wie unter ⚙ in der KI-Leiste der erweiterten Ansicht; beide Stellen ändern denselben Wert. Gespeichert wird im Browser (`cal-ui`, `cal-vopt`, `cal-theme`, `cal-lang`).
 
 ### 3.1 Erweiterte Ansicht
 
@@ -879,7 +881,7 @@ Alle Anfragen mit Header `X-Atlas-Token: <token>` (oder `?token=`). Antworten JS
 |---|---|---|
 | GET | `/api/agent/state` | Zustand (läuft, Sitzung, Agenten) |
 | GET | `/api/agent/events` | Ereignisstrom (zuerst Zustand, dann gesamter Verlauf, dann live) |
-| POST | `/api/agent/start` | Auftrag starten: `{agent, prompt, mode, fresh, attachments, model, effort}` (409, wenn schon einer läuft) |
+| POST | `/api/agent/start` | Auftrag starten: `{agent, prompt, mode, fresh, attachments, model, effort, gate, lang}` (409, wenn schon einer läuft) |
 | POST | `/api/agent/send` | Nachricht während der Arbeit: `{prompt, attachments}`; läuft nichts, wird ein neuer Auftrag gestartet |
 | POST | `/api/agent/upload` | Anhang hochladen: `{name, mime, data}` (Base64) → `{id, path, img, …}` |
 | POST | `/api/agent/stop` | Auftrag abbrechen |
@@ -951,7 +953,9 @@ node build.mjs --dev    # Entwicklungsfassung mit lesbaren Fehlermeldungen
 
 Das Ergebnis landet als `CodeAtlas.html` im übergeordneten Ordner. Die Bridge liefert es unter `/` aus und setzt dabei `window.__ATLAS_BRIDGE__ = true`; die Oberfläche verbindet sich dann mit dem Token aus `#token=` selbst.
 
-Die JSX ist (noch) eine einzige Datei mit rund 8.800 Zeilen. Die Aufteilung in Module ist eingeplant.
+Die JSX ist (noch) eine einzige Datei mit rund 9.000 Zeilen. Die Aufteilung in Module ist eingeplant.
+
+**Sprachen:** Die Oberfläche ist auf Deutsch geschrieben. Für Englisch übersetzt eine Schicht am Anfang von `src/CodeAtlasLab.jsx` (`I18N_EN`, `tr()`) alles Sichtbare: Textknoten, Tooltips, Platzhalter, Beschriftungen auf der Zeichenfläche und den Seitentitel. Benutzerinhalte (Code, Diffs, Antworten von Claude, Eingaben) bleiben unberührt. Texte, die an Claude gehen (Pipeline-Aufträge, Build-Korrektur, Kontextzeile), werden je Sprache ausdrücklich gewählt, und die Bridge gibt Claude eine englische Systemanweisung (`lang` bei `/api/agent/start`). Neue Oberflächentexte brauchen einen Eintrag in `I18N_EN`; `#` steht für eine Zahl, `{}` für einen beliebigen Teil.
 
 ---
 
@@ -994,7 +998,7 @@ Die JSX ist (noch) eine einzige Datei mit rund 8.800 Zeilen. Die Aufteilung in M
 
 - Version 4: Pipeline über alle Stufen, Qualitätstor (blockiert, Claude bessert nach, besteht), Commit pro Auftrag, Abspielen, Team (Start, Konflikterkennung, Diff, Zusammenführen, Konflikt-Abbruch, Verwerfen), Regeln, Wirkungsbereich, CLAUDE.md – mit nachgestelltem Claude Code (gleiche Ereignisse, Hooks und MCP-Aufrufe wie das echte).
 
-- Version 5: einfache Ansicht, Erweitert-Schalter, Einstellungsdialog, Akzentfarben, helles Schema, schmale Fenster.
+- Version 5: einfache Ansicht, Erweitert-Schalter, Einstellungsdialog, Akzentfarben, helles Schema, schmale Fenster; 5.1: englische Oberfläche (alle Bereiche im Browser durchgespielt, englische Claude-Anweisung).
 
 **Nicht getestet:** Version 4 mit dem echten Claude Code (insbesondere wie oft das echte Modell die Atlas-Werkzeuge von sich aus nutzt und wie der Stop-Hook in der aktuellen CLI-Version reagiert).  Windows – Start von `claude.cmd`, Hooks mit `python.exe`, Edge-Fenster, `CodeAtlas-starten.bat`. Scheitert dort der Freigabe-Hook, werden Shell-Befehle der KI abgelehnt statt nachgefragt.
 
@@ -1005,7 +1009,7 @@ Die JSX ist (noch) eine einzige Datei mit rund 8.800 Zeilen. Die Aufteilung in M
 - Adapter für Chat-Modelle (Ollama, Claude API),
 - Werte direkt im Detailfenster ändern, Bereiche für die KI sperren,
 - `CodeAtlasLab.jsx` in Module aufteilen, Analyse in einen Hintergrund-Thread,
-- Sprachpakete für weitere Sprachen.
+- Code-Kommentare auf Englisch, weitere Sprachen.
 
 ---
 
