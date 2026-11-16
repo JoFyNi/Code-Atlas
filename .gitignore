@@ -1,0 +1,26 @@
+# Abhängigkeiten und Bauzwischenstände
+build/node_modules/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Arbeitsdaten des Atlas (entstehen im geöffneten Projekt, auch im Beispiel)
+.codeatlas/
+examples/**/.claude/
+examples/**/CLAUDE.md
+
+# Kompilate des Beispiels
+examples/**/*.o
+examples/**/*.exe
+examples/**/a.out
+
+# Editor und Betriebssystem
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

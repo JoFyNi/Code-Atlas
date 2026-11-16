@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.gif binary
+# fertig gebautes Bündel: in Diffs und der Sprachstatistik ausblenden
+CodeAtlas.html linguist-generated=true -diff
+build/package-lock.json linguist-generated=true
